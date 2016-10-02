@@ -1,0 +1,19 @@
+﻿.long-div 
+{
+width:65%;
+display:inline-block;
+}
+.short-div {
+width:30%;
+border:thin;
+display:inline-block;
+}
+.ng-valid.ng-dirty {
+border-color:green;
+}
+.ng-invalid.ng-dirty {
+border-color:red;
+}
+.ng-invalid {
+border-color:red;
+}

@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html ng-app="AspNetOrganizerWithAngular" ng-controller="PageController">
+<head>
+    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/Site.css">
+    <title>New task</title>
+</head>
+<body>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
+    @Scripts.Render("~/bundles/AspNetOrganizerWithAngular")
+    <div class="bg-primary">
+        <center>
+            <h1>ToDo Tasks</h1>
+        </center>
+    </div>
+    <div class="long-div">
+    <table class="table table-bordered">
+        <tr ng-repeat="item in taskList"  class="{{isOverdue(item) ? 'bg-danger' : 'bg-default'}}">
+            <td>{{item.TaskName}}</td>
+            <td>{{item.DueDateTime.substring(0,10)}}</td>
+            <td><input type="checkbox" ng-model="item.IsCompleted" ng-change="saveTaskClick(item)"/></td>
+        </tr>
+    </table>
+        </div>
+    <form name="newTaskForm" class="short-div" ng-submit="newTaskForm.$valid&&addNewTask()" novalidate>
+    <div ng-show="NewTaskClicked">
+        <label>Task name:</label>
+        <br>
+        <input type="text" ng-model="task.TaskName" required />
+        <br>
+        <br>
+        <label>Task priority:</label>
+        <br>
+        <select ng-model="task.Priority" ng-options="item.priorId as item.priorTitle for item in taskPriorities" ng-selected="item.priorTitle" required></select>
+        <br>
+        <br>
+        <label>Due date:</label>
+        <br>
+        <input type="date" ng-model="task.DueDateTime" required/>
+        <br>
+        <br>
+        <label>Comment:</label>
+        <br>
+        <textarea ng-model="task.Comment" cols="50" rows="3"></textarea>
+        <br>
+        <br>
+        <input class="btn btn-primary" type="submit" value="Save task"/>
+    </div>
+        </form>
+    <br>
+    <input class="btn btn-primary" type="button" value="New Task" ng-click="newTaskClick()">
+</body>
+</html>
