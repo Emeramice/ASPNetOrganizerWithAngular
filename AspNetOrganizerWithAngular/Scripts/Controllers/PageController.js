@@ -23,7 +23,7 @@
     $scope.taskList = [];
     $scope.NewTaskClicked = false;
     LoadTaskList = function () {
-        var promise = $http.get('/Home/GetTaskList');
+        var promise = $http.get('/tasks');
         promise.then(function (response) {
             $scope.taskList = response.data;
         },
@@ -33,15 +33,25 @@
     };
 
     $scope.addNewTask = function () {
-        $http.post('/Home/AddNewTask', $scope.task);
-        $scope.NewTaskClicked = false;
-        $scope.taskList.push($scope.task);
+        var promise = $http.post('/tasks', $scope.task);
+        promise.then(function (response) {
+            $scope.NewTaskClicked = false;
+            var time = $scope.task.DueDateTime;
+            var dateString = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate();
+            $scope.task.DueDateTime = dateString;
+            $scope.task.TaskId = response.data;
+            $scope.taskList.push($scope.task);
+            $scope.task = {};
+        },
+        function (response) {
+            alert('Epic fail!');
+        });
     };
     $scope.newTaskClick = function () {
         $scope.NewTaskClicked = true;
     };
     $scope.saveTaskClick = function (currentTask) {
-        $http.put('/Home/ChangeItem', currentTask);
+        $http.put('/tasks/' + currentTask.TaskId, currentTask);
     };
     $scope.isOverdue = function (currentItem) {
         return (Date.parse(currentItem.DueDateTime) - Date.now() < 0) && (!currentItem.IsCompleted);

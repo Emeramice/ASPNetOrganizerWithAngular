@@ -25,14 +25,16 @@ namespace AspNetOrganizerWithAngular.Controllers
             return View();
         }
 
-        [System.Web.Http.HttpPost]
-        public ActionResult AddNewTask([FromBody] ToDoTask result)
+        [System.Web.Mvc.HttpPost]
+        [System.Web.Mvc.Route("tasks")]
+        public void AddNewTask([FromBody] ToDoTask result)
         {
+            int lastItem = 0;
             string taskDbConnectionString = "Data source =" + Server.MapPath("~/") + "TaskBase.db";
+            ToDoTaskForDatabase currentItem = new ToDoTaskForDatabase();
             using (SQLiteConnection taskDbConnection = new SQLiteConnection(taskDbConnectionString))
             {
                 TaskTableDataContext taskDbDataContext = new TaskTableDataContext(taskDbConnection);
-                ToDoTaskForDatabase currentItem = new ToDoTaskForDatabase();
                 currentItem.TaskId = null;
                 currentItem.TaskName = result.TaskName;
                 currentItem.Priority = result.Priority;
@@ -41,11 +43,23 @@ namespace AspNetOrganizerWithAngular.Controllers
                 currentItem.IsCompleted = 0;
                 taskDbDataContext.ToDoTask.InsertOnSubmit(currentItem);
                 taskDbDataContext.SubmitChanges();
+                Table<ToDoTaskForDatabase> ToDoTaskDataSet = taskDbDataContext.GetTable<ToDoTaskForDatabase>();
+                using (SQLiteCommand lastItemCmd = taskDbConnection.CreateCommand())
+                {
+                    taskDbConnection.Open();
+                    lastItemCmd.CommandText = "select seq from sqlite_sequence where name='ToDoTasks'";
+                    SQLiteDataReader lastItemRdr = lastItemCmd.ExecuteReader();
+                    lastItemRdr.Read();
+                    lastItem = lastItemRdr.GetInt32(0);
+                }
             }
-            return View("Index");
+            Response.Clear();
+            Response.Write(lastItem);
+            Response.End();
         }
 
-        [System.Web.Http.HttpGet]
+        [System.Web.Mvc.HttpGet]
+        [System.Web.Mvc.Route("tasks")]
         public void GetTaskList()
         {
             string jsonData = "";
@@ -62,8 +76,9 @@ namespace AspNetOrganizerWithAngular.Controllers
             }
         }
 
-        [System.Web.Http.HttpPut]
-        public ActionResult ChangeItem([FromBody] ToDoTask result)
+        [System.Web.Mvc.HttpPut]
+        [System.Web.Mvc.Route("tasks/{taskId}")]
+        public ActionResult ChangeItem(int taskId, [FromBody] ToDoTask result)
         {
             string taskDbConnectionString = "Data source =" + Server.MapPath("~/") + "TaskBase.db";
             using (SQLiteConnection taskDbConnection = new SQLiteConnection(taskDbConnectionString))
