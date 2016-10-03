@@ -14,6 +14,6 @@ border-color:green;
 .ng-invalid.ng-dirty {
 border-color:red;
 }
-.ng-invalid {
+.ng-invalid.ng-touched {
 border-color:red;
 }

@@ -10,7 +10,7 @@ namespace AspNetOrganizerWithAngular
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/site.css"));
+                      "~/Content/Site.css"));
             bundles.Add(new ScriptBundle("~/bundles/AspNetOrganizerWithAngular")
     .IncludeDirectory("~/Scripts/Controllers", "*.js")
     .Include("~/Scripts/AspNetOrganizerWithAngular.js"));

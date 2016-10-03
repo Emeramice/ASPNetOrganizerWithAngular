@@ -6,7 +6,7 @@
     <title>New task</title>
 </head>
 <body>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
     @Scripts.Render("~/bundles/AspNetOrganizerWithAngular")
     <div class="bg-primary">
         <center>
@@ -24,17 +24,17 @@
         </div>
     <form name="newTaskForm" class="short-div" ng-submit="newTaskForm.$valid&&addNewTask()" novalidate>
     <div ng-show="NewTaskClicked">
-        <label>Task name:</label>
+        <label>Task name <font color="red">(required)</font>:</label>
         <br>
         <input type="text" ng-model="task.TaskName" required />
         <br>
         <br>
-        <label>Task priority:</label>
+        <label>Task priority <font color="red">(required)</font>:</label>
         <br>
         <select ng-model="task.Priority" ng-options="item.priorId as item.priorTitle for item in taskPriorities" ng-selected="item.priorTitle" required></select>
         <br>
         <br>
-        <label>Due date:</label>
+        <label>Due date <font color="red">(required)</font>:</label>
         <br>
         <input type="date" ng-model="task.DueDateTime" required/>
         <br>
