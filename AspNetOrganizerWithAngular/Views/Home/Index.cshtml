@@ -21,6 +21,7 @@
             <td><input type="checkbox" ng-model="item.IsCompleted" ng-change="saveTaskClick(item)"/></td>
         </tr>
     </table>
+        <input class="btn btn-primary" type="button" value="New Task" ng-click="newTaskClick()">
         </div>
     <form name="newTaskForm" class="short-div" ng-submit="newTaskForm.$valid&&addNewTask()" novalidate>
     <div ng-show="NewTaskClicked">
@@ -47,7 +48,5 @@
         <input class="btn btn-primary" type="submit" value="Save task"/>
     </div>
         </form>
-    <br>
-    <input class="btn btn-primary" type="button" value="New Task" ng-click="newTaskClick()">
 </body>
 </html>
