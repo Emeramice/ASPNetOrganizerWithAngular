@@ -17,7 +17,7 @@
     <table class="table table-bordered">
         <tr ng-repeat="item in taskList"  class="{{isOverdue(item) ? 'bg-danger' : 'bg-default'}}">
             <td>{{item.TaskName}}</td>
-            <td>{{item.DueDateTime.substring(0,10)}}</td>
+            <td>{{item.DueDateTime | date: 'short'}}</td>
             <td><input type="checkbox" ng-model="item.IsCompleted" ng-change="saveTaskClick(item)"/></td>
         </tr>
     </table>

@@ -31,19 +31,19 @@ namespace AspNetOrganizerWithAngular.Controllers
         {
             int lastItem = 0;
             string taskDbConnectionString = "Data source =" + Server.MapPath("~/") + "TaskBase.db";
-            ToDoTaskForDatabase currentItem = new ToDoTaskForDatabase();
+            ToDoTask currentItem = new ToDoTask();
             using (SQLiteConnection taskDbConnection = new SQLiteConnection(taskDbConnectionString))
             {
                 TaskTableDataContext taskDbDataContext = new TaskTableDataContext(taskDbConnection);
                 currentItem.TaskId = null;
                 currentItem.TaskName = result.TaskName;
                 currentItem.Priority = result.Priority;
-                currentItem.DueDateTimeTicks = result.DueDateTime.Ticks;
+                currentItem.DueDateTime = result.DueDateTime;
                 currentItem.Comment = result.Comment;
                 currentItem.IsCompleted = 0;
                 taskDbDataContext.ToDoTask.InsertOnSubmit(currentItem);
                 taskDbDataContext.SubmitChanges();
-                Table<ToDoTaskForDatabase> ToDoTaskDataSet = taskDbDataContext.GetTable<ToDoTaskForDatabase>();
+                Table<ToDoTask> ToDoTaskDataSet = taskDbDataContext.GetTable<ToDoTask>();
                 using (SQLiteCommand lastItemCmd = taskDbConnection.CreateCommand())
                 {
                     taskDbConnection.Open();
@@ -67,8 +67,8 @@ namespace AspNetOrganizerWithAngular.Controllers
             using (SQLiteConnection taskDbConnection = new SQLiteConnection(taskDbConnectionString))
             {
                 TaskTableDataContext taskDbDataContext = new TaskTableDataContext(taskDbConnection);
-                Table<ToDoTaskForDatabase> ToDoTaskDataSet = taskDbDataContext.GetTable<ToDoTaskForDatabase>();
-                var TasksSet = from SetItem in ToDoTaskDataSet select new ToDoTask { TaskId = (int)SetItem.TaskId, TaskName = SetItem.TaskName, DueDateTime = new DateTime(SetItem.DueDateTimeTicks), IsCompleted = SetItem.IsCompleted == 1 ? true : false };
+                Table<ToDoTask> ToDoTaskDataSet = taskDbDataContext.GetTable<ToDoTask>();
+                var TasksSet = from SetItem in ToDoTaskDataSet select new { TaskId = (int)SetItem.TaskId, TaskName = SetItem.TaskName, DueDateTime = SetItem.DueDateTime, IsCompleted = SetItem.IsCompleted };
                 jsonData = JsonConvert.SerializeObject(TasksSet);
                 Response.Clear();
                 Response.Write(jsonData);
@@ -84,8 +84,8 @@ namespace AspNetOrganizerWithAngular.Controllers
             using (SQLiteConnection taskDbConnection = new SQLiteConnection(taskDbConnectionString))
             {
                 TaskTableDataContext taskDbDataContext = new TaskTableDataContext(taskDbConnection);
-                ToDoTaskForDatabase currentItem = taskDbDataContext.ToDoTask.Single(item => item.TaskId == result.TaskId);
-                currentItem.IsCompleted = result.IsCompleted ? 1 : 0;
+                ToDoTask currentItem = taskDbDataContext.ToDoTask.Single(item => item.TaskId == result.TaskId);
+                currentItem.IsCompleted = result.IsCompleted;
                 taskDbDataContext.SubmitChanges();
             }
             return View("Index");

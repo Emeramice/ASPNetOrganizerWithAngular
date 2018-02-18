@@ -5,6 +5,6 @@ namespace AspNetOrganizerWithAngular.Models
 
     partial class TaskTableDataContext:DataContext
     {
-        public Table<ToDoTaskForDatabase> ToDoTask;
+        public Table<ToDoTask> ToDoTask;
     }
 }

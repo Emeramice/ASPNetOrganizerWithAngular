@@ -1,11 +1,9 @@
 ﻿var PageController = function ($scope, $http) {
     $scope.task = {
-        TaskName: '',
-        Priority: 0,
-        DueDateTime: undefined,
-        Comment: '',
-        IsCompleted: false
+        Priority:1,
+        DueDateTime:new Date()
     };
+
     $scope.taskPriorities =
     [{
         priorId: 0,
@@ -20,11 +18,42 @@
         priorTitle: 'High'
     }
     ];
-    $scope.taskList = [];
-    $scope.NewTaskClicked = false;
+
+    $scope.addNewTask = function () {
+        $scope.task.DueDateTime = $scope.task.DueDateTime.getTime();
+        var promise = $http.post('/tasks', $scope.task);
+        promise.then(function (response) {
+            $scope.NewTaskClicked = false;
+            $scope.task.DueDateTime = new Date($scope.task.DueDateTime);
+            $scope.task.TaskId = response.data;
+            $scope.taskList.push($scope.task);
+            $scope.task = {
+                Priority: 1,
+                DueDateTime: new Date()
+            };
+        },
+        function (response) {
+            alert('Epic fail!');
+        });
+    };
+
+    $scope.newTaskClick = function () {
+        $scope.NewTaskClicked = true;
+    };
+
+    $scope.saveTaskClick = function (currentTask) {
+        currentTask.DueDateTime = currentTask.DueDateTime.getTime();
+        $http.put('/tasks/' + currentTask.TaskId, currentTask);
+    };
+
+    $scope.isOverdue = function (currentItem) {
+        return ((new Date(currentItem.DueDateTime)) - Date.now() < 0) && (!currentItem.IsCompleted);
+    };
+
     LoadTaskList = function () {
         var promise = $http.get('/tasks');
         promise.then(function (response) {
+            response.data.forEach(ConvertDate)
             $scope.taskList = response.data;
         },
         function (response) {
@@ -32,30 +61,12 @@
         });
     };
 
-    $scope.addNewTask = function () {
-        var promise = $http.post('/tasks', $scope.task);
-        promise.then(function (response) {
-            $scope.NewTaskClicked = false;
-            var time = $scope.task.DueDateTime;
-            var dateString = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate();
-            $scope.task.DueDateTime = dateString;
-            $scope.task.TaskId = response.data;
-            $scope.taskList.push($scope.task);
-            $scope.task = {};
-        },
-        function (response) {
-            alert('Epic fail!');
-        });
+    ConvertDate = function (element, index, array) {
+        element.DueDateTime=new Date(element.DueDateTime)
     };
-    $scope.newTaskClick = function () {
-        $scope.NewTaskClicked = true;
-    };
-    $scope.saveTaskClick = function (currentTask) {
-        $http.put('/tasks/' + currentTask.TaskId, currentTask);
-    };
-    $scope.isOverdue = function (currentItem) {
-        return (Date.parse(currentItem.DueDateTime) - Date.now() < 0) && (!currentItem.IsCompleted);
-    };
+
+    $scope.taskList = [];
+    $scope.NewTaskClicked = false;
     LoadTaskList();
 }
 
